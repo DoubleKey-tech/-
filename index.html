@@ -65,8 +65,8 @@
     const heroLinks = {
       "北京市": "./北京.html",
       "天津市": "./天津.html",
-      "上海": "shanghai_hero.html",
-      "重庆": "chongqing_hero.html",
+      "上海市": "./上海.html",
+      "重庆市": "./重庆.html",
       "河北省": "./河北.html",
       "山西省": "./山西.html",
       "辽宁省": "./辽宁.html",
@@ -91,7 +91,7 @@
       "青海省": "./青海.html",
       "台湾省": "./台湾.html",
       "内蒙古自治区": "./内蒙古.html",
-      "广西": "guangxi_hero.html",
+      "广西壮族自治区": "广西.html",
       "西藏自治区": "./西藏.html",
       "宁夏回族自治区": "./宁夏.html",
       "新疆维吾尔自治区": "./新疆.html",
@@ -135,7 +135,7 @@
       const resp = await fetch(CN_GEOJSON_URL);
       const geojson = await resp.json();
       echarts.registerMap('china', geojson);
-      // 随机值着色
+    
       baseOption.series[0].data = geojson.features.map(f => ({
         name: f.properties.name,
         value: Math.round(Math.random() * 100)
