@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>中国地图 - 红色家风名人</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(180deg, #de0d25, #fafbf6);
+      color: #fff;
+    }
+    header {
+      background-color: rgba(220, 38, 38, 0.9);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header h1 {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    header .author {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    #chart {
+      width: 100%;
+      height: calc(100% - 60px);
+    }
+    footer {
+      position: fixed;
+      bottom: 8px;
+      right: 12px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    .tooltip-custom {
+      background: rgba(220,38,38,0.85);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>中国地图 · 红色家风名人</h1>
+    <div class="author">作者：寇殿彬</div>
+  </header>
+  <div id="chart"></div>
+  <footer>数据来源：阿里云 DataV · 点击省份查看名人介绍</footer>
+
+  <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    const chartDom = document.getElementById('chart');
+    const myChart  = echarts.init(chartDom);
+
+    const heroLinks = {
+      "北京市": "./北京.html",
+      "天津市": "./天津.html",
+      "上海": "shanghai_hero.html",
+      "重庆": "chongqing_hero.html",
+      "河北省": "./河北.html",
+      "山西省": "./山西.html",
+      "辽宁省": "./辽宁.html",
+      "吉林省": "./吉林.html",
+      "黑龙江省": "./黑龙江.html",
+      "江苏省": "./江苏.html",
+      "浙江省": "./浙江.html",
+      "安徽省": "./安徽.html",
+      "福建省": "./福建.html",
+      "江西省": "./江西.html",
+      "山东省": "./山东.html",
+      "河南省": "./河南.html",
+      "湖北省": "./湖北.html",
+      "湖南省": "./湖南.html",
+      "广东省": "./广东.html",
+      "海南省": "./海南.html",
+      "四川省": "./四川.html",
+      "贵州省": "./贵州.html",
+      "云南省": "./云南.html",
+      "陕西省": "./陕西.html",
+      "甘肃省": "./甘肃.html",
+      "青海省": "./青海.html",
+      "台湾省": "./台湾.html",
+      "内蒙古自治区": "./内蒙古.html",
+      "广西": "guangxi_hero.html",
+      "西藏自治区": "./西藏.html",
+      "宁夏回族自治区": "./宁夏.html",
+      "新疆维吾尔自治区": "./新疆.html",
+      "香港特别行政区": "./香港.html",
+      "澳门特别行政区": "./澳门.html"
+    };
+
+    
+
+    const baseOption = {
+      tooltip: {
+        trigger: 'item',
+        formatter: (p) => `<div class="tooltip-custom">${p.name}</div>`,
+        extraCssText: 'border: none;'
+      },
+      visualMap: {
+        show: false,
+        min: 0,
+        max: 100,
+        inRange: { color: ['#fecaca', '#dc2626'] }
+      },
+      series: [{
+        type: 'map',
+        map: 'china',
+        roam: true,
+        label: {
+          show: false,
+          color: '#fff'
+        },
+        emphasis: {
+          label: { show: true, color: '#fff', fontWeight: 'bold' },
+          itemStyle: { areaColor: '#f87171' }
+        },
+        data: [] // 可随机数据以着色
+      }]
+    };
+
+    const CN_GEOJSON_URL = './china.json';
+
+    async function init() {
+      const resp = await fetch(CN_GEOJSON_URL);
+      const geojson = await resp.json();
+      echarts.registerMap('china', geojson);
+      // 随机值着色
+      baseOption.series[0].data = geojson.features.map(f => ({
+        name: f.properties.name,
+        value: Math.round(Math.random() * 100)
+      }));
+      myChart.setOption(baseOption);
+
+      myChart.on('click', params => {
+        const province = params.name;
+        if (heroLinks[province]) {
+          window.location.href = heroLinks[province];
+        } else {
+          alert(`未配置 ${province} 的名人介绍页面`);
+        }
+      });
+    }
+
+    init();
+    window.addEventListener('resize', () => myChart.resize());
+  </script>
+</body>
+</html>
